@@ -30,8 +30,16 @@ const getMessages = async (req, res) => {
     res.status(500).json(error);
   }
 };
+const deleteMessage = async (req, res) => {
+  const { messageId } = req.params;
+  try {
+    await Message.findByIdAndDelete(messageId);
+    res.status(200).send("The message has been deleted.");
+  } catch (error) {}
+};
 
 module.exports = {
   createMessage,
   getMessages,
+  deleteMessage,
 };
