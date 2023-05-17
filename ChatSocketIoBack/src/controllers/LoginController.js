@@ -1,23 +1,32 @@
 const bcrypt = require("bcrypt");
-const Joi = require("joi");
 const User = require("../models/User");
-
-const genAuthToken = require("../utils/genAuthToken.js");
-
+const jwt = require("jsonwebtoken");
+const createToken = (_id) => {
+  const jwtKey = process.env.JWT_SECRET_KEY;
+  return jwt.sign(
+    {
+      _id,
+    },
+    jwtKey,
+    { expiresIn: "3d" }
+  );
+};
 const signing = async (req, res) => {
-  const schema = Joi.object({
-    email: Joi.string().min(3).max(200).required().email(),
-    password: Joi.string().min(3).max(200).required(),
-  });
+  const { email, password } = req.body;
+  try {
+    let user = await User.findOne({ email });
 
-  const { error } = schema.validate(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
-  let user = await User.findOne({ email: req.body.email });
-  if (!user) return res.status(400).send("Invalid email or password..");
-  const isValid = await bcrypt.compare(req.body.password, user.password);
-  if (!isValid) return res.status(400).send("Invalid email or password..");
-  const token = genAuthToken(user);
-  res.send(token);
+    if (!user) return res.status(400).json("Incorrect email or password");
+    const isValidatorPassword = await bcrypt.compare(password, user.password);
+    if (!isValidatorPassword)
+      return res.status(400).json("Incorrect email or password");
+    const token = createToken(user._id);
+
+    res.status(200).json({ _id: user._id, name: user.name, email, token });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
 };
 
 module.exports = {

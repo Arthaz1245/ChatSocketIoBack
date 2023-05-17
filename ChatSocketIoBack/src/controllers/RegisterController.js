@@ -1,32 +1,49 @@
 const bcrypt = require("bcrypt");
-const Joi = require("joi");
 const User = require("../models/User");
 const genAuthToken = require("../utils/genAuthToken");
 const validator = require("validator");
-const register = async (req, res) => {
-  const schema = Joi.object({
-    name: Joi.string().min(3).max(40).required(),
-    email: Joi.string().min(3).max(200).required().email(),
-    password: Joi.string().min(10).max(200).required(),
-  });
-  const { error } = schema.validate(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
-  let user = await User.findOne({ email: req.body.email });
+const jwt = require("jsonwebtoken");
 
-  if (user) return res.status(400).send("User already exist");
-  user = new User({
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-  });
-  const salt = await bcrypt.genSalt(10);
-  user.password = await bcrypt.hash(user.password, salt);
-  if (!validator.isStrongPassword(user.password)) {
-    return res.status(400).json("The password is not strong enought");
+const createToken = (_id) => {
+  const jwtKey = process.env.JWT_SECRET_KEY;
+  return jwt.sign(
+    {
+      _id,
+    },
+    jwtKey,
+    { expiresIn: "3d" }
+  );
+};
+const register = async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+    let user = await User.findOne({ email });
+
+    if (user) return res.status(400).json("User already exist");
+    if (!name || !email || !password)
+      return res.status(400).json("All fields are required");
+    if (!validator.isEmail(email)) {
+      return res.status(400).json("The password is not strong enought");
+    }
+    if (!validator.isStrongPassword(password)) {
+      return res.status(400).json("The password is not strong enought");
+    }
+    user = new User({
+      name,
+      email,
+      password,
+    });
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(user.password, salt);
+
+    await user.save();
+    const token = createToken(user._id);
+
+    res.status(200).json({ _id: user._id, name, email, token });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
   }
-  user = await user.save();
-  const token = genAuthToken(user);
-  res.send(token);
 };
 module.exports = {
   register,

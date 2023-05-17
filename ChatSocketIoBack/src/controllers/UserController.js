@@ -4,7 +4,7 @@ const findUser = async (req, res) => {
   const userId = req.params.userId;
   try {
     const user = await User.findById(userId);
-    if (!user) return res.status(400).send("User doesn't exist");
+    if (!user) return res.status(400).json("User doesn't exist");
 
     res.status(200).json(user);
   } catch (error) {
@@ -15,7 +15,7 @@ const findUser = async (req, res) => {
 const findAllUsers = async (req, res) => {
   try {
     const users = await User.find();
-    if (!users) return res.status(400).send("There are not users");
+    if (!users) return res.status(400).json("There are not users");
 
     res.status(200).json(users);
   } catch (error) {
@@ -23,7 +23,6 @@ const findAllUsers = async (req, res) => {
     res.status(500).json(error);
   }
 };
-
 
 module.exports = {
   findUser,

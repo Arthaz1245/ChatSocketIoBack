@@ -9,7 +9,7 @@ const createMessage = async (req, res) => {
   if (!isSenderIn.length)
     return res
       .status(400)
-      .send("error, is not the correct sender in this conversation");
+      .json("error, is not the correct sender in this conversation");
   const message = new Message({ chatId, senderId, text });
   try {
     const response = await message.save();
@@ -34,7 +34,7 @@ const deleteMessage = async (req, res) => {
   const { messageId } = req.params;
   try {
     await Message.findByIdAndDelete(messageId);
-    res.status(200).send("The message has been deleted.");
+    res.status(200).json("The message has been deleted.");
   } catch (error) {}
 };
 
