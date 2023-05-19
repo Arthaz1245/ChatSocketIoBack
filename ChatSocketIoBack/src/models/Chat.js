@@ -1,7 +1,9 @@
 const mongoose = require("mongoose");
 
 const chatSchema = new mongoose.Schema(
-  { members: Array },
+  {
+    members: Array,
+  },
   { versionKey: false }
 );
 const Chat = mongoose.model("Chat", chatSchema);

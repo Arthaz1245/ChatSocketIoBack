@@ -18,6 +18,22 @@ const createChat = async (req, res) => {
     res.status(500).json(error);
   }
 };
+//createGroupChat
+// const createGroupChat = async (req, res) => {
+//   const { roomName, members } = req.body;
+//   try {
+//     const newGroupChat = new Chat({
+//       members: [members],
+//       roomName: roomName,
+//       isChatGroup: true,
+//     });
+//     const response = await newGroupChat.save();
+//     res.status(200).json(response);
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json(error);
+//   }
+// };
 //findUserChats
 const findUserChats = async (req, res) => {
   const { userId } = req.params;
@@ -51,7 +67,7 @@ const deleteChat = async (req, res) => {
     await Message.deleteMany({ chatId });
     // Delete the chat
     await Chat.findByIdAndDelete(chatId);
-    res.status(200).send("Chat and associated messages deleted successfully.");
+    res.status(200).json("Chat and associated messages deleted successfully.");
   } catch (error) {
     console.log(error);
     res.status(500).json(error);

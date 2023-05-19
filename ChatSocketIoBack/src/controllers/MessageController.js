@@ -4,12 +4,12 @@ const Chat = require("../models/Chat");
 const createMessage = async (req, res) => {
   const { chatId, senderId, text } = req.body;
   const chat = await Chat.findById(chatId);
-  const chatMembers = chat.members;
-  const isSenderIn = chatMembers.filter((c) => c === senderId);
-  if (!isSenderIn.length)
-    return res
-      .status(400)
-      .json("error, is not the correct sender in this conversation");
+  const chatMembers = chat?.members;
+  // const isSenderIn = chatMembers?.filter((c) => c === senderId);
+  // if (!isSenderIn?.length)
+  //   return res
+  //     .status(400)
+  //     .json("error, is not the correct sender in this conversation");
   const message = new Message({ chatId, senderId, text });
   try {
     const response = await message.save();
