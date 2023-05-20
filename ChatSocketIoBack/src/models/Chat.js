@@ -3,6 +3,10 @@ const mongoose = require("mongoose");
 const chatSchema = new mongoose.Schema(
   {
     members: Array,
+    isChatRoom: {
+      type: Boolean,
+      default: false,
+    },
   },
   { versionKey: false }
 );
