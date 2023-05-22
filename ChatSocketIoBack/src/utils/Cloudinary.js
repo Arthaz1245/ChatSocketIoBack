@@ -7,3 +7,14 @@ cloudinary.config({
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
+async function uploadImage(filePath) {
+  return await cloudinary.uploader.upload(filePath, {
+    folder: "Novelty Books",
+  });
+}
+
+async function deleteImage(publicId) {
+  return await cloudinary.uploader.destroy(publicId);
+}
+
+module.exports = { uploadImage, deleteImage };

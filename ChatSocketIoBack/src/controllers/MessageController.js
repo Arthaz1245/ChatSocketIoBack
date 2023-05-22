@@ -1,17 +1,26 @@
 const Message = require("../models/Message");
-const Chat = require("../models/Chat");
+const { uploadImage, deleteImage } = require("../utils/Cloudinary");
 //create message
+
 const createMessage = async (req, res) => {
-  const { chatId, senderId, text } = req.body;
-  const chat = await Chat.findById(chatId);
-  const chatMembers = chat?.members;
-  // const isSenderIn = chatMembers?.filter((c) => c === senderId);
-  // if (!isSenderIn?.length)
-  //   return res
-  //     .status(400)
-  //     .json("error, is not the correct sender in this conversation");
-  const message = new Message({ chatId, senderId, text });
   try {
+    const { chatId, senderId, text } = req.body;
+
+    const message = new Message({
+      chatId,
+      senderId,
+      text,
+    });
+
+    if (req.files?.image) {
+      const result = await uploadImage(req.files.image.tempFilePath);
+      message.image = {
+        public_id: result.public_id,
+        secure_url: result.secure_url,
+      };
+      await fs.unlink(req.files.image.tempFilePath);
+    }
+
     const response = await message.save();
     res.status(200).json(response);
   } catch (error) {
