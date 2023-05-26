@@ -1,7 +1,7 @@
 const Message = require("../models/Message");
 const { uploadImage, deleteImage } = require("../utils/Cloudinary");
 //create message
-
+const fs = require("fs-extra");
 const createMessage = async (req, res) => {
   try {
     const { chatId, senderId, text } = req.body;
@@ -41,8 +41,13 @@ const getMessages = async (req, res) => {
 };
 const deleteMessage = async (req, res) => {
   const { messageId } = req.params;
+
   try {
-    await Message.findByIdAndDelete(messageId);
+    const message = await Message.findByIdAndDelete(messageId);
+
+    if (Message.image?.public_id) {
+      await deleteImage(message.image?.public_id);
+    }
     res.status(200).json("The message has been deleted.");
   } catch (error) {}
 };

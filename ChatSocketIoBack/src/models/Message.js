@@ -6,14 +6,8 @@ const messageSchema = new mongoose.Schema(
     senderId: String,
     text: String,
     image: {
-      public_id: {
-        type: String,
-        required: true,
-      },
-      secure_url: {
-        type: String,
-        required: true,
-      },
+      public_id: String,
+      secure_url: String,
     },
   },
   { timestamps: true }
