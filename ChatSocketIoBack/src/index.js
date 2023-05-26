@@ -9,7 +9,6 @@ mongoose
   .then(() => console.log("Connected to MongoDB Atlas"))
   .catch((error) => console.log("Connection Failed", error.message));
 
-// Syncing all the models at once.
 app.listen(port, () => {
   console.log("Port connected", port);
 });

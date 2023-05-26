@@ -1,6 +1,6 @@
 const Message = require("../models/Message");
 const { uploadImage, deleteImage } = require("../utils/Cloudinary");
-//create message
+
 const fs = require("fs-extra");
 const createMessage = async (req, res) => {
   try {
@@ -28,7 +28,7 @@ const createMessage = async (req, res) => {
     res.status(500).json(error);
   }
 };
-//get Message
+
 const getMessages = async (req, res) => {
   const { chatId } = req.params;
   try {
